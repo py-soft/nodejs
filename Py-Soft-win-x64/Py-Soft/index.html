@@ -118,7 +118,7 @@
 				
 				var printText = getInnerText(document.getElementById("print"));
 				
-				
+				console.log(printText);
 				//printText = replaceText(str.split(printerName+']')[1]);
 				printText = printText.replace(/\t/g, '  ');
 				printText = "\t\t\t\t\t" + printText;
@@ -126,7 +126,9 @@
 				printText = printText.replace(/_/g , " ");
 				
 				//alert(printerName);
-				var result = printer.printDirect({data:printText // or simple String: "some text"
+				console.log(printText);
+				var result = printer.printDirect({
+				  data:printText // or simple String: "some text"
 				, printer:printerName // printer name, if missing then will print to default printer
 				, type: 'TEXT' // type: RAW, TEXT, PDF, JPEG, .. depends on platform
 				, success:function(jobID){
