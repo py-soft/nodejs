@@ -9,7 +9,7 @@
 <body>
 <!-- http://localhost:3000/ -->
 <!-- https://qa.sms.py-soft.com:62525/ -->
-<iframe id="receiver" src="https://qa.sms.py-soft.com:62525/" 
+<iframe id="receiver" src="http://localhost:3000/" 
 	style="border: 0; position: absolute; top:0; left:0; right:0; bottom:0; width: 100%; height:100%">
 </iframe>
 
@@ -35,8 +35,10 @@
 				printNotificationsToBeSent();
 			break;
 
+			case 'notificationsToBeSent':
 			case 'notificationErrors':
-				notificationErrors(response.html, response.printerName);
+			case 'successfullySentNotifications':
+				createAndPrintPdf(response.html, response.printerName);
 			break;
 		}
 	}, false);
@@ -49,24 +51,6 @@
 		return reciever.postMessage(allPrinters, '*');
 	}
 
-	function printNotificationsToBeSent(data, printerName) {
-
-	}
-
-	function notificationErrors(data, printerName) {
-		console.log(data);
-		createAndPrintPdf(data, printerName);
-	}
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -77,6 +61,7 @@
 		var htmlTemplate = '<html>'+
 								'<head>'+
 									'<style type="text/css">'+
+										'body{margin: 20px 30px 0 30px;}'+
 										'table{width: 100%; margin-bottom: 0;border: 1px solid #ddd;border-spacing: 0;border-collapse: collapse;font-family: Helvetica;font-size: 13px;}'+
 										'table>thead>tr>th {border-bottom: 2px solid #ddd; text-align: left; padding: 8px;}'+
 										'table tbody tr td {border-top: 1px solid #ddd;padding: 6px;}'+
@@ -89,7 +74,7 @@
 							'</html>';
 
 		var options = {
-			"format": "Letter",        // allowed units: A3, A4, A5, Legal, Letter, Tabloid
+			"format": "A4",        // allowed units: A3, A4, A5, Legal, Letter, Tabloid
 			"orientation": "portrait" // portrait or landscape
 			// "height": "10.5in",
 			// "width": "8in",
@@ -98,7 +83,7 @@
   			var onStream  = stream.pipe(fs.createWriteStream('./pdf/document.pdf'));
   			onStream.on('finish', function() {
   				console.log("Finished Converting PDF");
-
+				console.log('Printer Name:  '+ printerName);
   				var pythonProcess = child.spawn('python', ['print.py', printerName]);
 				pythonProcess.stdout.on('data', function(data) {
 					console.log('stdout: ' + data);
