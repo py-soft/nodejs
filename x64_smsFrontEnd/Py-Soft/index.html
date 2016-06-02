@@ -9,7 +9,7 @@
 <body>
 <!-- http://localhost:3000/ -->
 <!-- https://qa.sms.py-soft.com:62525/ -->
-<iframe id="receiver" src="http://localhost:3000/" 
+<iframe id="receiver" src="https://qa.sms.py-soft.com:62525/" 
 	style="border: 0; position: absolute; top:0; left:0; right:0; bottom:0; width: 100%; height:100%">
 </iframe>
 
@@ -44,7 +44,22 @@
 	}, false);
 
 	var allPrinters = printer.getPrinters();
-	// console.log(printer.getDefaultPrinterName());
+	console.log(allPrinters);
+
+	function checkPrinter(printerName) {
+		// if()
+		var flag = false;
+		$.each(allPrinters, function(key, val) {
+			if(val.name == printerName) {
+				flag = true;
+			}
+		});
+
+		console.log('Printer flag: '+flag);
+		return flag;
+	}
+
+	checkPrinter();
 
 	function sendAllAvilablePrinters(){
 		var allPrinters = printer.getPrinters();
@@ -58,46 +73,55 @@
 
 	// *************** Create PDF Func and Print ***************************
 	function createAndPrintPdf(html, printerName) {
-		var htmlTemplate = '<html>'+
-								'<head>'+
-									'<style type="text/css">'+
-										'body{margin: 20px 30px 0 30px;}'+
-										'table{width: 100%; margin-bottom: 0;border: 1px solid #ddd;border-spacing: 0;border-collapse: collapse;font-family: Helvetica;font-size: 13px;}'+
-										'table>thead>tr>th {border-bottom: 2px solid #ddd; text-align: left; padding: 8px;}'+
-										'table tbody tr td {border-top: 1px solid #ddd;padding: 6px;}'+
-										// 'table>tbody>tr:nth-of-type(odd) {background-color: #f9f9f9;}'+
-									'</style>'+
-								'</head>'+
-								'<body>'+
-									html+
-								'</body>'+
-							'</html>';
+		if(!checkPrinter(printerName)) {
+			alert('The selected Printer does not exist!');
+		}else{
+			obj = {
+				trigger: 'popupSuccess',
+				msg: 'Printing Job successfully send to printer'
+			};
+			reciever.postMessage(obj, '*');
+			var htmlTemplate = '<html>'+
+									'<head>'+
+										'<style type="text/css">'+
+											'body{margin: 20px 30px 0 30px;}'+
+											'table{width: 100%; margin-bottom: 0;border: 1px solid #ddd;border-spacing: 0;border-collapse: collapse;font-family: Helvetica;font-size: 13px;}'+
+											'table>thead>tr>th {border-bottom: 2px solid #ddd; text-align: left; padding: 8px;}'+
+											'table tbody tr td {border-top: 1px solid #ddd;padding: 6px;}'+
+											// 'table>tbody>tr:nth-of-type(odd) {background-color: #f9f9f9;}'+
+										'</style>'+
+									'</head>'+
+									'<body>'+
+										html+
+									'</body>'+
+								'</html>';
 
-		var options = {
-			"format": "A4",        // allowed units: A3, A4, A5, Legal, Letter, Tabloid
-			"orientation": "portrait" // portrait or landscape
-			// "height": "10.5in",
-			// "width": "8in",
-		};
-		pdf.create(htmlTemplate, options).toStream(function(err, stream){
-  			var onStream  = stream.pipe(fs.createWriteStream('./pdf/document.pdf'));
-  			onStream.on('finish', function() {
-  				console.log("Finished Converting PDF");
-				console.log('Printer Name:  '+ printerName);
-  				var pythonProcess = child.spawn('python', ['print.py', printerName]);
-				pythonProcess.stdout.on('data', function(data) {
-					console.log('stdout: ' + data);
-				});
-				pythonProcess.stderr.on('data', function (data) {
-					console.log('stderr: ' + data);
-				});
-				pythonProcess.on('close', function (code) {
-					// if(code !== 0){
-						return reciever.postMessage(code, '*');
-					// }
-				});
-  			});
-		});
+			var options = {
+				"format": "Letter",        // allowed units: A3, A4, A5, Legal, Letter, Tabloid
+				"orientation": "portrait" // portrait or landscape
+				// "height": "10.5in",
+				// "width": "8in",
+			};
+			pdf.create(htmlTemplate, options).toStream(function(err, stream){
+	  			var onStream  = stream.pipe(fs.createWriteStream('./pdf/document.pdf'));
+	  			onStream.on('finish', function() {
+	  				console.log("Finished Converting PDF");
+					console.log('Printer Name:  '+ printerName);
+	  				var pythonProcess = child.spawn('python', ['print.py', printerName]);
+					pythonProcess.stdout.on('data', function(data) {
+						console.log('stdout: ' + data);
+					});
+					pythonProcess.stderr.on('data', function (data) {
+						console.log('stderr: ' + data);
+					});
+					pythonProcess.on('close', function (code) {
+						// if(code !== 0){
+							return reciever.postMessage(code, '*');
+						// }
+					});
+	  			});
+			});
+		}
 	}
 	// ************* #Create PDF Func and Print ***************************
 </script>
