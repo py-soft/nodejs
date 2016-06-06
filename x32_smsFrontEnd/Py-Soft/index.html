@@ -40,6 +40,10 @@
 			case 'successfullySentNotifications':
 				createAndPrintPdf(response.html, response.printerName);
 			break;
+
+			case 'testDefaultPrint':
+				createAndPrintPdf(response.html, response.printerName);
+			break;
 		}
 	}, false);
 
@@ -78,7 +82,7 @@
 		}else{
 			obj = {
 				trigger: 'popupSuccess',
-				msg: 'Printing Job successfully send to printer'
+				msg: 'Print job send to printer'
 			};
 			reciever.postMessage(obj, '*');
 			var htmlTemplate = '<html>'+
