@@ -27,6 +27,10 @@
 	addEventListener("message", function(event) {
 		var response = event.data;
 		switch(response.trigger) {
+			case 'print':   // this is a global trigger, if it gets called, it will imediately print, with html and printerName
+				createAndPrintPdf(response.html, response.printerName);
+			break;
+
 			case 'sendAllAvilablePrinters':
 				sendAllAvilablePrinters();
 			break;
