@@ -3,7 +3,7 @@ import win32api
 # import win32print
 import sys
 
-GHOSTSCRIPT_PATH = "C:\\Program Files\\gs\\gs9.19\\bin\\gswin64.exe"
+GHOSTSCRIPT_PATH = "C:\\Program Files\\gs\\gs9.19\\bin\\gswin32.exe"
 GSPRINT_PATH = "C:\\Program Files\\Ghostgum\\gsview\\gsprint.exe"
 
 # YOU CAN PUT HERE THE NAME OF YOUR SPECIFIC PRINTER INSTEAD OF DEFAULT
